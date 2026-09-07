@@ -71,9 +71,9 @@ Item {
         id: confirmDialog
         anchors.fill: parent
         opened: root.opened
-        message: root.targetTitle ? ("Fechar “" + root.targetTitle + "”?") : "Fechar esta janela?"
-        cancelText: "Cancelar"
-        confirmText: "Fechar"
+        message: root.targetTitle ? ("Close “" + root.targetTitle + "”?") : "Close this window?"
+        cancelText: "Cancel"
+        confirmText: "Close"
         background: Color.menu.background
         foreground: Color.menu.text
         scrim: Color.menu.scrim

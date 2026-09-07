@@ -9,7 +9,12 @@ before closing the focused window, instead of closing it instantly.
 
 By default, closing a window in Omarchy is instant — one accidental keypress
 and an unsaved document, terminal session, or form is gone. This plugin adds
-a confirmation dialog (Fechar/Cancelar) before the window is actually closed.
+a confirmation dialog (Close/Cancel) before the window is actually closed.
+
+![Close confirmation dialog](screenshots/confirm-dialog.png)
+
+*Mockup styled after the shell's default theme tokens (`menu.*` colors),
+built for this README — not a live screen capture.*
 
 ## What's included
 
