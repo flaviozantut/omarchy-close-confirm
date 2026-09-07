@@ -61,6 +61,23 @@ different keys, edit `close-confirm.lua` after cloning.
    omarchy-shell shell rescanPlugins
    ```
 
+## Uninstall
+
+1. Remove the `dofile(...)` line for this plugin from
+   `~/.config/hypr/bindings.lua` (this alone restores the default instant
+   `SUPER + Q` / `SUPER + W` close, since Hyprland reloads config on save).
+2. Remove the plugin directory:
+
+   ```bash
+   rm -rf ~/.config/omarchy/plugins/flaviozantut.close-confirm
+   ```
+
+3. Force a plugin rescan:
+
+   ```bash
+   omarchy-shell shell rescanPlugins
+   ```
+
 ## Requirements
 
 - Omarchy 4.0.2+ (uses the `hl.dsp`/`hl.dispatch` Lua Hyprland API and the
