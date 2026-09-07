@@ -31,6 +31,15 @@ the same way Omarchy's other keybinding-owning plugins are (see e.g.
 `io.github.pablo-merino.altswitch`), so it stays in one file inside the
 plugin directory instead of being copy-pasted into your personal bindings.
 
+## Keybindings
+
+Omarchy binds both `SUPER + Q` and `SUPER + W` to the same instant
+`Close window` action by default (`tiling.lua`, `hl.dsp.window.close()` —
+two keys for keyboard-layout compatibility). `close-confirm.lua` unbinds
+both and rebinds them to the confirmation script, so **both shortcuts are
+intercepted**, not just one. If you only want to change one of them, or want
+different keys, edit `close-confirm.lua` after cloning.
+
 ## Install
 
 1. Clone the plugin into your user plugins directory:
