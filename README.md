@@ -46,10 +46,13 @@ described below.
      ~/.local/bin/omarchy-close-confirm
    ```
 
-3. Bind it in `~/.config/hypr/bindings.lua`, replacing (or alongside) your
-   existing close-window binds:
+3. Bind it in `~/.config/hypr/bindings.lua`. Unbind the defaults first, or
+   Hyprland will run both the old close action and this script on the same
+   key:
 
    ```lua
+   hl.unbind("SUPER + Q")
+   hl.unbind("SUPER + W")
    o.bind("SUPER + Q", "Close window (confirm)", os.getenv("HOME") .. "/.local/bin/omarchy-close-confirm")
    o.bind("SUPER + W", "Close window (confirm)", os.getenv("HOME") .. "/.local/bin/omarchy-close-confirm")
    ```
