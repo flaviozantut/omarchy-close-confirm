@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Captures the focused window and asks the close-confirm overlay to confirm
+# before closing it. Bound to SUPER+Q and SUPER+W in place of the default
+# instant close.
+set -euo pipefail
+
+win=$(hyprctl activewindow -j)
+[ "$win" = "{}" ] && exit 0
+
+payload=$(jq -c '{address, title}' <<<"$win")
+omarchy-shell shell toggle flaviozantut.close-confirm "$payload"

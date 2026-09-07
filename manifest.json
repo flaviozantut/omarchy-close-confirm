@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "flaviozantut.close-confirm",
+  "name": "Close Confirm",
+  "version": "1.0.0",
+  "author": "flaviozantut",
+  "description": "Asks for confirmation before closing the focused window (used by SUPER+Q and SUPER+W)",
+  "kinds": [
+    "overlay"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "overlay": "CloseConfirm.qml"
+  }
+}
