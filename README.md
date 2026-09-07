@@ -22,10 +22,14 @@ built for this README — not a live screen capture.*
   (id: `flaviozantut.close-confirm`).
 - `bin/omarchy-close-confirm` — a helper script that captures the focused
   window and asks the overlay to confirm before closing it.
+- `close-confirm.lua` — unbinds the default SUPER+Q/W close actions and
+  rebinds them to the helper script above.
 
 The overlay only reacts when asked to `open`/`toggle` — it does not bind any
-key on its own. Wiring a keybinding to the helper script is a manual step,
-described below.
+key on its own. `close-confirm.lua` is loaded from `~/.config/hypr/bindings.lua`
+the same way Omarchy's other keybinding-owning plugins are (see e.g.
+`io.github.pablo-merino.altswitch`), so it stays in one file inside the
+plugin directory instead of being copy-pasted into your personal bindings.
 
 ## Install
 
@@ -36,28 +40,13 @@ described below.
      ~/.config/omarchy/plugins/flaviozantut.close-confirm
    ```
 
-   (Or copy just `manifest.json` and `CloseConfirm.qml` there if you prefer
-   to keep the helper script elsewhere.)
-
-2. Install the helper script:
-
-   ```bash
-   ln -s ~/.config/omarchy/plugins/flaviozantut.close-confirm/bin/omarchy-close-confirm \
-     ~/.local/bin/omarchy-close-confirm
-   ```
-
-3. Bind it in `~/.config/hypr/bindings.lua`. Unbind the defaults first, or
-   Hyprland will run both the old close action and this script on the same
-   key:
+2. Load its keybindings from `~/.config/hypr/bindings.lua`:
 
    ```lua
-   hl.unbind("SUPER + Q")
-   hl.unbind("SUPER + W")
-   o.bind("SUPER + Q", "Close window (confirm)", os.getenv("HOME") .. "/.local/bin/omarchy-close-confirm")
-   o.bind("SUPER + W", "Close window (confirm)", os.getenv("HOME") .. "/.local/bin/omarchy-close-confirm")
+   dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/flaviozantut.close-confirm/close-confirm.lua")
    ```
 
-4. Force a plugin rescan if it doesn't pick up automatically:
+3. Force a plugin rescan if it doesn't pick up automatically:
 
    ```bash
    omarchy-shell shell rescanPlugins
