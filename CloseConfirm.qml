@@ -14,10 +14,13 @@ Item {
   property string targetAddress: ""
   property string targetTitle: ""
 
+  readonly property var addressPattern: /^0x[0-9A-Fa-f]+$/
+
   function open(payloadJson) {
     var data = {}
     try { data = JSON.parse(payloadJson || "{}") } catch (e) {}
-    root.targetAddress = data.address || ""
+    var address = data.address || ""
+    root.targetAddress = root.addressPattern.test(address) ? address : ""
     root.targetTitle = data.title || ""
     root.opened = true
     confirmDialog.selectedIndex = 1
