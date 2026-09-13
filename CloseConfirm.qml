@@ -43,10 +43,10 @@ Item {
   }
 
   function doClose() {
-    // This Hyprland build routes hyprctl dispatch through its Lua config
-    // API instead of the classic "DISPATCHER PARAMS" string form.
+    // The Lua dispatcher requires an options table. A bare string is ignored
+    // and would close whichever window is focused when this command runs.
     if (root.targetAddress)
-      Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.window.close(\"address:" + root.targetAddress + "\")"])
+      Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.window.close({ window = \"address:" + root.targetAddress + "\" })"])
     root.dismiss()
   }
 
