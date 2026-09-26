@@ -6,10 +6,11 @@
   "author": "flaviozantut",
   "description": "Asks for confirmation before closing the focused window (used by SUPER+Q and SUPER+W)",
   "kinds": [
-    "overlay"
+    "overlay",
+    "service"
   ],
-  "keepLoaded": true,
   "entryPoints": {
-    "overlay": "CloseConfirm.qml"
+    "overlay": "CloseConfirm.qml",
+    "service": "Service.qml"
   }
 }
