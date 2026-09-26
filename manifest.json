@@ -12,5 +12,11 @@
   "entryPoints": {
     "overlay": "CloseConfirm.qml",
     "service": "Service.qml"
+  },
+  "service": {
+    "displayName": "Close Confirm",
+    "description": "Asks for confirmation before closing the focused window",
+    "category": "Window Management",
+    "allowMultiple": false
   }
 }
