@@ -1,11 +1,43 @@
 #!/usr/bin/env bash
-# Captures the focused window and asks the close-confirm overlay to confirm
-# before closing it. Bound to SUPER+Q and SUPER+W in place of the default
-# instant close.
+# Confirm the captured window; never fall back to whichever window has focus.
 set -euo pipefail
 
-win=$(hyprctl activewindow -j)
-[ "$win" = "{}" ] && exit 0
+process_start() {
+  local stat rest
+  local -a fields
+  stat=$(<"/proc/$1/stat") || return 1
+  # comm can contain spaces and parentheses; the suffix begins after its last ).
+  rest=${stat##*) }
+  [[ $rest != "$stat" ]] || return 1
+  read -r -a fields <<<"$rest"
+  [[ ${fields[19]:-} =~ ^[0-9]+$ ]] || return 1
+  printf '%s\n' "${fields[19]}"
+}
 
-payload=$(jq -c '{address, title}' <<<"$win")
-omarchy-shell shell toggle flaviozantut.close-confirm "$payload"
+valid_target() {
+  [[ $1 =~ ^0x[0-9A-Fa-f]+$ && $2 =~ ^[1-9][0-9]*$ && $3 =~ ^[0-9]+$ ]]
+}
+
+if [[ ${1:-} == --close ]]; then
+  [[ $# == 4 ]] || exit 1
+  address=$2 pid=$3 started=$4
+  valid_target "$address" "$pid" "$started" || exit 1
+  clients=$(timeout --kill-after=1s 2s hyprctl clients -j) || exit 1
+  jq -e --arg address "$address" --argjson pid "$pid" '
+    type == "array" and ([.[] | select(.address == $address)] as $matches
+      | ($matches | length) == 1 and $matches[0].pid == $pid)
+  ' <<<"$clients" >/dev/null || exit 1
+  [[ $(process_start "$pid") == "$started" ]] || exit 1
+  # Hyprland requires an options table; a bare address selects the focused window.
+  timeout --kill-after=1s 2s hyprctl dispatch "hl.dsp.window.close({ window = \"address:$address\" })"
+else
+  [[ $# == 0 ]] || exit 1
+  win=$(timeout --kill-after=1s 2s hyprctl activewindow -j)
+  [[ $win != "{}" ]] || exit 0
+  address=$(jq -er '.address | select(type == "string")' <<<"$win")
+  pid=$(jq -er '.pid | select(type == "number" and . > 0 and floor == .)' <<<"$win")
+  started=$(process_start "$pid")
+  valid_target "$address" "$pid" "$started" || exit 1
+  payload=$(jq -c --arg started "$started" '{address, title, pid, started: $started}' <<<"$win")
+  timeout --kill-after=1s 2s omarchy-shell shell toggle flaviozantut.close-confirm "$payload"
+fi

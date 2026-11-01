@@ -13,41 +13,57 @@ Item {
   property bool opened: false
   property string targetAddress: ""
   property string targetTitle: ""
+  property string targetPid: ""
+  property string targetStarted: ""
 
   readonly property var addressPattern: /^0x[0-9A-Fa-f]+$/
 
   function open(payloadJson) {
+    if (root.opened) return
     var data = {}
-    try { data = JSON.parse(payloadJson || "{}") } catch (e) {}
-    var address = data.address || ""
-    root.targetAddress = root.addressPattern.test(address) ? address : ""
-    root.targetTitle = data.title || ""
+    try { data = JSON.parse(payloadJson || "{}") } catch (e) { return }
+    if (!data || typeof data !== "object") return
+    var address = data.address
+    var pid = String(data.pid || "")
+    var started = data.started
+    if (typeof data.pid !== "number"
+        || typeof address !== "string" || !root.addressPattern.test(address)
+        || !/^[1-9][0-9]*$/.test(pid)
+        || typeof started !== "string" || !/^[0-9]+$/.test(started)) return
+    root.targetAddress = address
+    root.targetTitle = typeof data.title === "string" ? data.title : ""
+    root.targetPid = pid
+    root.targetStarted = started
     root.opened = true
     confirmDialog.selectedIndex = 1
-    Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+    Qt.callLater(function() { if (root.opened) keyCatcher.forceActiveFocus() })
   }
 
   function close() {
     root.opened = false
+    root.targetAddress = ""
+    root.targetTitle = ""
+    root.targetPid = ""
+    root.targetStarted = ""
   }
 
   function dismiss() {
-    root.opened = false
+    root.close()
     if (root.shell && typeof root.shell.hide === "function")
       root.shell.hide((root.manifest && root.manifest.id) || "flaviozantut.close-confirm")
   }
 
   function toggle() {
     if (root.opened) root.dismiss()
-    else root.open("{}")
   }
 
   function doClose() {
-    // The Lua dispatcher requires an options table. A bare string is ignored
-    // and would close whichever window is focused when this command runs.
-    if (root.targetAddress)
-      Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.window.close({ window = \"address:" + root.targetAddress + "\" })"])
+    if (!root.opened || !root.targetAddress || !root.targetPid || !root.targetStarted) return
+    var command = [Quickshell.env("HOME") + "/.config/omarchy/plugins/flaviozantut.close-confirm/bin/omarchy-close-confirm",
+                   "--close", root.targetAddress, root.targetPid, root.targetStarted]
+    // Invalidate before launching: a second confirmation cannot reuse this request.
     root.dismiss()
+    Quickshell.execDetached(command)
   }
 
   PanelWindow {

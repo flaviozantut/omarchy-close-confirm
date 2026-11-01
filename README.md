@@ -87,3 +87,21 @@ different keys, edit `close-confirm.lua` after cloning.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Target validation
+
+Confirmation captures the window address, owning process ID, and process start
+time. Before closing, the helper checks that the address still belongs to that
+same process. Missing, changed, or unreadable targets are left alone; a failed
+check never falls back to the focused window. Desktop commands receive a two-second
+timeout, with forced cleanup one second later if termination is ignored. Repeated confirmation cannot reuse an already consumed request.
+
+This reduces stale-target risk, but it is not a compositor-issued window identity:
+windows sharing one server process can retain the same owner, and validation and
+close dispatch are separate operations. A small race remains between them.
+
+## Tests
+
+Run `python3 tests/test_close_confirm.py` and
+`node tests/qml-state.js CloseConfirm.qml`. Tests use fake desktop commands and
+execute the production QML handlers without launching a desktop UI.
